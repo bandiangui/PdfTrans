@@ -23,14 +23,14 @@ namespace WordToPDF.Controllers
             Pdf pdf = new Pdf();
             Aspose.Pdf.Generator.Section section = pdf.Sections.Add();
 
-            System.Drawing.Image imge = System.Drawing.Image.FromFile(@"C:\Users\芸芸\Desktop\cb71b07fc15cbcc3e587e1e83bc751c7.jpg");
+            System.Drawing.Image imge = System.Drawing.Image.FromFile(@"C:\Users\芸芸\Desktop\cb71b07fc15cbcc3e587e1e83bc751c7.png");
             AddWaterMark(ref imge);
 
-            Aspose.Pdf.Generator.Image img = Aspose.Pdf.Generator.Image.FromSystemImage(imge);
-            img.ImageInfo.ImageFileType = ImageFileType.Jpeg;
-            section.PageInfo.PageWidth = imge.Width / imge.HorizontalResolution * 72;
-            section.PageInfo.PageHeight = imge.Height / imge.HorizontalResolution * 72;
-            section.PageInfo.Margin = new MarginInfo();
+            //Aspose.Pdf.Generator.Image img = Aspose.Pdf.Generator.Image.FromSystemImage(imge);
+            //img.ImageInfo.ImageFileType = ImageFileType.Jpeg;
+            //section.PageInfo.PageWidth = imge.Width / imge.HorizontalResolution * 72;
+            //section.PageInfo.PageHeight = imge.Height / imge.HorizontalResolution * 72;
+            //section.PageInfo.Margin = new MarginInfo();
 
             //FloatingBox fb = new FloatingBox(700, 800);
             //TextInfo ti = new TextInfo();
@@ -42,11 +42,11 @@ namespace WordToPDF.Controllers
             //pdf.Watermarks.Add(fb);
 
 
-            for (int i = 0; i < 10; i++)
-            {
-                section.Paragraphs.Add(img);
-            }
-            pdf.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".pdf");
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    section.Paragraphs.Add(img);
+            //}
+            //pdf.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".pdf");
             return View();
         }
 
@@ -70,9 +70,23 @@ namespace WordToPDF.Controllers
             Watermark.WaterImage wt = new Watermark.WaterImage();
             wt.Create();
 
-            wt.ResultImage.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".png", ImageFormat.Png);
-            graph.DrawImage(wt.ResultImage, new PointF(0, 0));
-            image.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".png", ImageFormat.Png);
+            //wt.ResultImage.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".png", ImageFormat.Png);
+            //创建颜色矩阵
+            float[][] ptsArray ={ 
+                                            new float[] {1, 0, 0, 0, 0},
+                                            new float[] {0, 1, 0, 0, 0},
+                                            new float[] {0, 0, 1, 0, 0},
+                                            new float[] {0, 0, 0, 0.5f, 0}, //注意：此处为0.0f为完全透明，1.0f为完全不透明
+                                            new float[] {0, 0, 0, 0, 1}};
+            ColorMatrix colorMatrix = new ColorMatrix(ptsArray);
+            //新建一个Image属性
+            ImageAttributes imageAttributes = new ImageAttributes();
+            //将颜色矩阵添加到属性
+            imageAttributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default,
+                ColorAdjustType.Default);
+
+            graph.DrawImage(wt.ResultImage, new System.Drawing.Rectangle(0, 0, wt.ResultImage.Width, wt.ResultImage.Height), 0, 0, wt.ResultImage.Width, wt.ResultImage.Height, GraphicsUnit.Pixel, imageAttributes);
+            image.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".jpg", ImageFormat.Jpeg);
         }
     }
 }

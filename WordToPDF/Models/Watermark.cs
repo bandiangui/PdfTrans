@@ -278,8 +278,17 @@ namespace WordToPDF.Models
                         Brush brushShadow = new SolidBrush(Color.FromArgb(90, 0, 0, 0));
                         graph.DrawString(_text, font, brushShadow, _left + 2, _top + 1);
                     }
+                    if (_incline > 0)
+                    {
+                        graph.RotateTransform(30.0f);
+                        _width = Convert.ToInt32(graph.VisibleClipBounds.Width);
+                        _height = Convert.ToInt32(graph.VisibleClipBounds.Height);
+                        _incline = 0;
+                        Create();
+                        return;
+                    }
                     graph.DrawString(_text, font, brush, new PointF(_left, _top), strFormat);
-                    bitmap.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".png", ImageFormat.Png);
+                    //bitmap.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".png", ImageFormat.Png);
                     _resultImage = (Image)bitmap.Clone();
                     bitmap.Dispose();
                     graph.Dispose();
