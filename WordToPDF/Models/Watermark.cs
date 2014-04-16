@@ -22,47 +22,39 @@ namespace WordToPDF.Models
             private string _fontFamily;
             private int _fontSize;
             private bool _adaptable;
-            private FontStyle _fontStyle;
             private bool _shadow;
             private Stream _backgroundImage;
             private Color _bgColor;
+            private Color _fontColor;
             private bool _noBg;
             private int _left;
             private Image _resultImage;
             private string _text;
             private int _top;
-            private int _BgAlpha;
-            private int _red;
-            private int _green;
-            private int _blue;
+            private float _transparency;
             private int _incline;
+            private bool _bold;
 
             public WaterImage()
             {
-                //
-                // TODO: Add constructor logic here
-                //
                 _width = 460;
                 _height = 30;
                 _fontFamily = "华文行楷";
-                _fontSize = 20;
-                _fontStyle = FontStyle.Regular;
+                _fontSize = 140;
+                _bold = true;
                 _adaptable = true;
                 _shadow = false;
                 _left = 0;
                 _top = 0;
-                _BgAlpha = 100;
-                _red = 0;
-                _green = 0;
-                _blue = 0;
+                _transparency = 0.5f;
                 _incline = 45;
-                _text = "这里是水印";
+                _text = "内部资料";
                 _backgroundImage = null;
                 _noBg = true;
-                _bgColor = Color.FromArgb(_BgAlpha, 255, 255, 255);
+                _bgColor = Color.White;
+                _fontColor = Color.Black;
             }
 
-            /**/
             /// <summary>
             /// 字体
             /// </summary>
@@ -71,7 +63,6 @@ namespace WordToPDF.Models
                 set { this._fontFamily = value; }
             }
 
-            /**/
             /// <summary>
             /// 文字大小
             /// </summary>
@@ -80,27 +71,23 @@ namespace WordToPDF.Models
                 set { this._fontSize = value; }
             }
 
-            /**/
+
             /// <summary>
-            /// 文字风格
+            /// 水印得透明度
             /// </summary>
-            public FontStyle FontStyle
+            public float Transparency
             {
-                get { return _fontStyle; }
-                set { _fontStyle = value; }
+                get
+                {
+                    if (_transparency > 1.0f)
+                    {
+                        _transparency = 1.0f;
+                    }
+                    return _transparency;
+                }
+                set { _transparency = value; }
             }
 
-            /**/
-            /// <summary>
-            /// 透明度0-255,255表示不透明
-            /// </summary>
-            public int BgAlpha
-            {
-                get { return _BgAlpha; }
-                set { _BgAlpha = value; }
-            }
-
-            /**/
             /// <summary>
             /// 水印文字是否使用阴影
             /// </summary>
@@ -110,25 +97,12 @@ namespace WordToPDF.Models
                 set { _shadow = value; }
             }
 
-            public int Red
+            public Color FontColor
             {
-                get { return _red; }
-                set { _red = value; }
+                get { return _fontColor; }
+                set { _fontColor = value; }
             }
 
-            public int Green
-            {
-                get { return _green; }
-                set { _green = value; }
-            }
-
-            public int Blue
-            {
-                get { return _blue; }
-                set { _blue = value; }
-            }
-
-            /**/
             /// <summary>
             /// 底图
             /// </summary>
@@ -137,7 +111,6 @@ namespace WordToPDF.Models
                 set { this._backgroundImage = value; }
             }
 
-            /**/
             /// <summary>
             /// 水印文字的左边距
             /// </summary>
@@ -146,8 +119,6 @@ namespace WordToPDF.Models
                 set { this._left = value; }
             }
 
-
-            /**/
             /// <summary>
             /// 水印文字的顶边距
             /// </summary>
@@ -156,7 +127,6 @@ namespace WordToPDF.Models
                 set { this._top = value; }
             }
 
-            /**/
             /// <summary>
             /// 生成后的图片
             /// </summary>
@@ -166,7 +136,6 @@ namespace WordToPDF.Models
                 get { return _resultImage; }
             }
 
-            /**/
             /// <summary>
             /// 水印文本
             /// </summary>
@@ -175,7 +144,6 @@ namespace WordToPDF.Models
                 set { this._text = value; }
             }
 
-            /**/
             /// <summary>
             /// 生成图片的宽度
             /// </summary>
@@ -185,7 +153,6 @@ namespace WordToPDF.Models
                 set { _width = value; }
             }
 
-            /**/
             /// <summary>
             /// 生成图片的高度
             /// </summary>
@@ -195,7 +162,6 @@ namespace WordToPDF.Models
                 set { _height = value; }
             }
 
-            /**/
             /// <summary>
             /// 根据字体调整背景
             /// </summary>
@@ -205,13 +171,17 @@ namespace WordToPDF.Models
                 set { _adaptable = value; }
             }
 
+            /// <summary>
+            /// 背景颜色
+            /// </summary>
             public Color BgColor
             {
                 get { return _bgColor; }
                 set { _bgColor = value; }
             }
+
             /// <summary>
-            /// 无背景
+            /// 无背景色
             /// </summary>
             public bool NoBg
             {
@@ -228,6 +198,15 @@ namespace WordToPDF.Models
                 set { _incline = value; }
             }
 
+            /// <summary>
+            /// 水印文字是否加粗
+            /// </summary>
+            public bool Bold
+            {
+                get { return _bold; }
+                set { _bold = value; }
+            }
+
             public void Create()
             {
 
@@ -236,26 +215,18 @@ namespace WordToPDF.Models
                     Bitmap bitmap;
                     Graphics graph;
 
-                    if (this._backgroundImage == null)
+                    bitmap = new Bitmap(this._width, this._height, PixelFormat.Format32bppArgb);
+                    graph = Graphics.FromImage(bitmap);
+                    if (!_noBg)
                     {
-                        bitmap = new Bitmap(this._width, this._height, PixelFormat.Format64bppArgb);
-                        graph = Graphics.FromImage(bitmap);
-                        if (!_noBg)
-                        {
-                            graph.Clear(this._bgColor);
-                        }
-                    }
-                    else
-                    {
-                        bitmap = new Bitmap(Image.FromStream(_backgroundImage));
-                        graph = Graphics.FromImage(bitmap);
+                        graph.Clear(this._bgColor);
                     }
 
-                    graph.SmoothingMode = SmoothingMode.HighQuality;
+                    graph.SmoothingMode = SmoothingMode.AntiAlias;
                     graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
                     graph.CompositingQuality = CompositingQuality.HighQuality;
 
-                    Font font = new Font(_fontFamily, _fontSize, _fontStyle);
+                    Font font = _bold ? new Font(_fontFamily, _fontSize, FontStyle.Bold) : new Font(_fontFamily, _fontSize, FontStyle.Regular);
                     SizeF size = graph.MeasureString(_text, font);
 
                     if (_adaptable && this._backgroundImage == null)
@@ -265,30 +236,27 @@ namespace WordToPDF.Models
                         _height = (int)size.Height;
                         _adaptable = false;
                         Create();
+                        bitmap.Dispose();
+                        graph.Dispose();
                         return;
                     }
 
-                    Brush brush = new SolidBrush(Color.FromArgb(_BgAlpha, _red, _green, _blue));
+                    Brush brush = new SolidBrush(_fontColor);
                     StringFormat strFormat = new StringFormat();
                     strFormat.Alignment = StringAlignment.Near;
 
                     if (_shadow)
                     {
                         // 加阴影
-                        Brush brushShadow = new SolidBrush(Color.FromArgb(90, 0, 0, 0));
+                        Brush brushShadow = new SolidBrush(Color.Gray);
                         graph.DrawString(_text, font, brushShadow, _left + 2, _top + 1);
                     }
-                    if (_incline > 0)
-                    {
-                        graph.RotateTransform(30.0f);
-                        _width = Convert.ToInt32(graph.VisibleClipBounds.Width);
-                        _height = Convert.ToInt32(graph.VisibleClipBounds.Height);
-                        _incline = 0;
-                        Create();
-                        return;
-                    }
+
                     graph.DrawString(_text, font, brush, new PointF(_left, _top), strFormat);
-                    //bitmap.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".png", ImageFormat.Png);
+                    if (_incline != 0)
+                    {
+                        bitmap = KiRotate(bitmap);
+                    }
                     _resultImage = (Image)bitmap.Clone();
                     bitmap.Dispose();
                     graph.Dispose();
@@ -298,6 +266,78 @@ namespace WordToPDF.Models
 
                     throw;
                 }
+            }
+
+            /// <summary>
+            /// 任意角度旋转
+            /// </summary>
+            /// <param name="bmp">原始图Bitmap</param>
+            /// <param name="angle">旋转角度</param>
+            /// <param name="bkColor">背景色</param>
+            /// <returns>输出Bitmap</returns>
+            private Bitmap KiRotate(Bitmap bmp)
+            {
+                int w = bmp.Width + 2;
+                int h = bmp.Height + 2;
+                Bitmap tmp = new Bitmap(w, h, bmp.PixelFormat);
+                Graphics graph = Graphics.FromImage(tmp);
+                if (!_noBg)
+                {
+                    graph.Clear(_bgColor);
+                }
+
+                graph.SmoothingMode = SmoothingMode.HighQuality;
+                graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graph.CompositingQuality = CompositingQuality.HighQuality;
+
+                graph.DrawImageUnscaled(bmp, 1, 1);
+
+                graph.Dispose();
+
+                GraphicsPath path = new GraphicsPath();
+                path.AddRectangle(new RectangleF(0f, 0f, w, h));
+                Matrix mtrx = new Matrix();
+                mtrx.Rotate(_incline);
+                RectangleF rct = path.GetBounds(mtrx);
+                Bitmap dst = new Bitmap((int)rct.Width, (int)rct.Height, bmp.PixelFormat);
+                graph = Graphics.FromImage(dst);
+
+                if (!_noBg)
+                {
+                    graph.Clear(_bgColor);
+                }
+
+                graph.SmoothingMode = SmoothingMode.HighQuality;
+                graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graph.CompositingQuality = CompositingQuality.HighQuality;
+
+                graph.TranslateTransform(-rct.X, -rct.Y);
+                graph.RotateTransform(_incline);
+
+                graph.DrawImageUnscaled(tmp, 0, 0);
+                graph.Dispose();
+                tmp.Dispose();
+                return dst;
+            }
+
+            public ImageAttributes SetTransparency(float transparency)
+            {
+
+                //创建颜色矩阵
+                float[][] ptsArray ={ 
+                      new float[] {1, 0, 0, 0, 0},
+                      new float[] {0, 1, 0, 0, 0},
+                      new float[] {0, 0, 1, 0, 0},
+                      new float[] {0, 0, 0, transparency, 0}, //注意：此处为0.0f为完全透明，1.0f为完全不透明
+                      new float[] {0, 0, 0, 0, 1}};
+                ColorMatrix colorMatrix = new ColorMatrix(ptsArray);
+                //新建一个Image属性
+                ImageAttributes imageAttributes = new ImageAttributes();
+                //将颜色矩阵添加到属性
+                imageAttributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default,
+                 ColorAdjustType.Default);
+
+                return imageAttributes;
             }
         }
     }

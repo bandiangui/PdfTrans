@@ -7,6 +7,8 @@ using Aspose.Pdf.Generator;
 using WordToPDF.Models;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
+using System.IO;
 //using Aspose.Words;
 //using Aspose.Pdf;
 
@@ -23,7 +25,7 @@ namespace WordToPDF.Controllers
             Pdf pdf = new Pdf();
             Aspose.Pdf.Generator.Section section = pdf.Sections.Add();
 
-            System.Drawing.Image imge = System.Drawing.Image.FromFile(@"C:\Users\芸芸\Desktop\cb71b07fc15cbcc3e587e1e83bc751c7.png");
+            System.Drawing.Image imge = System.Drawing.Image.FromFile(@"C:\Users\芸芸\Desktop\cb71b07fc15cbcc3e587e1e83bc751c7.jpg");
             AddWaterMark(ref imge);
 
             //Aspose.Pdf.Generator.Image img = Aspose.Pdf.Generator.Image.FromSystemImage(imge);
@@ -64,29 +66,26 @@ namespace WordToPDF.Controllers
             return View();
         }
 
-        public void AddWaterMark(ref System.Drawing.Image image) {
+        public void AddWaterMark(ref System.Drawing.Image image)
+        {
             System.Drawing.Graphics graph = System.Drawing.Graphics.FromImage(image);
-            graph.DrawImage(image, 0,0, image.Width, image.Height);
-            Watermark.WaterImage wt = new Watermark.WaterImage();
-            wt.Create();
+            graph.DrawImage(image, 0, 0, image.Width, image.Height);
 
-            //wt.ResultImage.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".png", ImageFormat.Png);
-            //创建颜色矩阵
-            float[][] ptsArray ={ 
-                                            new float[] {1, 0, 0, 0, 0},
-                                            new float[] {0, 1, 0, 0, 0},
-                                            new float[] {0, 0, 1, 0, 0},
-                                            new float[] {0, 0, 0, 0.5f, 0}, //注意：此处为0.0f为完全透明，1.0f为完全不透明
-                                            new float[] {0, 0, 0, 0, 1}};
-            ColorMatrix colorMatrix = new ColorMatrix(ptsArray);
-            //新建一个Image属性
-            ImageAttributes imageAttributes = new ImageAttributes();
-            //将颜色矩阵添加到属性
-            imageAttributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default,
-                ColorAdjustType.Default);
+            graph.SmoothingMode = SmoothingMode.HighQuality;
+            graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            graph.CompositingQuality = CompositingQuality.HighQuality;
 
-            graph.DrawImage(wt.ResultImage, new System.Drawing.Rectangle(0, 0, wt.ResultImage.Width, wt.ResultImage.Height), 0, 0, wt.ResultImage.Width, wt.ResultImage.Height, GraphicsUnit.Pixel, imageAttributes);
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Watermark.WaterImage wt = new Watermark.WaterImage();
+                wt.Create();
+                graph.DrawImage(wt.ResultImage, new System.Drawing.Rectangle(0, 0, wt.ResultImage.Width, wt.ResultImage.Height)
+                    , 0, 0, wt.ResultImage.Width, wt.ResultImage.Height, GraphicsUnit.Pixel, wt.SetTransparency(wt.Transparency));
+            }
+
             image.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".jpg", ImageFormat.Jpeg);
+            image.Dispose();
+            graph.Dispose();
         }
     }
 }
