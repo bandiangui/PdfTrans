@@ -77,7 +77,7 @@ namespace WordToPDF.Controllers
 
             using (MemoryStream ms = new MemoryStream())
             {
-                Watermark.WaterImage wt = new Watermark.WaterImage();
+                Watermark.WaterImage wt = new Watermark.WaterImage(image.Width, image.Height);
                 wt.Create();
                 graph.DrawImage(wt.ResultImage, new System.Drawing.Rectangle(0, 0, wt.ResultImage.Width, wt.ResultImage.Height)
                     , 0, 0, wt.ResultImage.Width, wt.ResultImage.Height, GraphicsUnit.Pixel, wt.SetTransparency(wt.Transparency));

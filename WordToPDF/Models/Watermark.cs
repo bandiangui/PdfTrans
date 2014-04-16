@@ -17,44 +17,65 @@ namespace WordToPDF.Models
         /// </summary>
         public class WaterImage
         {
-            private int _width;
-            private int _height;
-            private string _fontFamily;
-            private int _fontSize;
-            private bool _adaptable;
-            private bool _shadow;
+            private int _width = 460;
+            private int _height = 30;
+            private int _left = 0;
+            private int _top = 0;
+
+            private string _text = "内部资料";
+            private string _fontFamily = "华文行楷";
+            private int _fontSize = 140;
+            private Color _fontColor = Color.Black;
+            private bool _bold = true;
+
+            /// <summary>
+            /// 根据背景调整字体大小
+            /// </summary>
+            private bool _adaptable = true;
+            /// <summary>
+            /// 水印文字是否使用阴影
+            /// </summary>
+            private bool _shadow = false;
+            /// <summary>
+            /// 水印平铺
+            /// </summary>
+            private bool _tiling = true;
+            /// <summary>
+            /// 无背景色
+            /// </summary>
+            private bool _noBg = true;
+            /// <summary>
+            /// 背景颜色
+            /// </summary>
+            private Color _bgColor = Color.White;
+            /// <summary>
+            /// 水印得透明度
+            /// </summary>
+            private float _transparency = 0.5f;
+            /// <summary>
+            /// 倾斜角度
+            /// </summary>
+            private int _incline = 45;
+
+            /// <summary>
+            /// 底图
+            /// </summary>
             private Stream _backgroundImage;
-            private Color _bgColor;
-            private Color _fontColor;
-            private bool _noBg;
-            private int _left;
+            /// <summary>
+            /// 生成后的图片
+            /// </summary>
             private Image _resultImage;
-            private string _text;
-            private int _top;
-            private float _transparency;
-            private int _incline;
-            private bool _bold;
 
-            public WaterImage()
+            #region 构造函数
+            public WaterImage() { }
+            public WaterImage(int width, int height)
             {
-                _width = 460;
-                _height = 30;
-                _fontFamily = "华文行楷";
-                _fontSize = 140;
-                _bold = true;
-                _adaptable = true;
-                _shadow = false;
-                _left = 0;
-                _top = 0;
-                _transparency = 0.5f;
-                _incline = 45;
-                _text = "内部资料";
-                _backgroundImage = null;
-                _noBg = true;
-                _bgColor = Color.White;
-                _fontColor = Color.Black;
+                _width = width;
+                _height = height;
             }
+            #endregion
 
+            #region 属性
             /// <summary>
             /// 字体
             /// </summary>
@@ -70,7 +91,6 @@ namespace WordToPDF.Models
             {
                 set { this._fontSize = value; }
             }
-
 
             /// <summary>
             /// 水印得透明度
@@ -95,6 +115,14 @@ namespace WordToPDF.Models
             {
                 get { return _shadow; }
                 set { _shadow = value; }
+            }
+            /// <summary>
+            /// 水印平铺
+            /// </summary>
+            public bool Tiling
+            {
+                get { return _tiling; }
+                set { _tiling = value; }
             }
 
             public Color FontColor
@@ -163,7 +191,7 @@ namespace WordToPDF.Models
             }
 
             /// <summary>
-            /// 根据字体调整背景
+            /// 根据背景调整字体大小
             /// </summary>
             public bool Adaptable
             {
@@ -206,6 +234,7 @@ namespace WordToPDF.Models
                 get { return _bold; }
                 set { _bold = value; }
             }
+            #endregion
 
             public void Create()
             {
@@ -217,10 +246,6 @@ namespace WordToPDF.Models
 
                     bitmap = new Bitmap(this._width, this._height, PixelFormat.Format32bppArgb);
                     graph = Graphics.FromImage(bitmap);
-                    if (!_noBg)
-                    {
-                        graph.Clear(this._bgColor);
-                    }
 
                     graph.SmoothingMode = SmoothingMode.AntiAlias;
                     graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
@@ -229,17 +254,24 @@ namespace WordToPDF.Models
                     Font font = _bold ? new Font(_fontFamily, _fontSize, FontStyle.Bold) : new Font(_fontFamily, _fontSize, FontStyle.Regular);
                     SizeF size = graph.MeasureString(_text, font);
 
-                    if (_adaptable && this._backgroundImage == null)
+                    if (_adaptable)
                     {
-                        // 自适应大小
-                        _width = (int)size.Width;
-                        _height = (int)size.Height;
-                        _adaptable = false;
-                        Create();
-                        bitmap.Dispose();
-                        graph.Dispose();
-                        return;
+                        while (size.Width > _width || size.Height > _height)
+                        {
+                            _fontSize--;
+                            font = _bold ? new Font(_fontFamily, _fontSize, FontStyle.Bold) : new Font(_fontFamily, _fontSize, FontStyle.Regular);
+                            size = graph.MeasureString(_text, font);
+                        }
                     }
+
+                    // 根据字体大小裁剪画布
+                    bitmap = bitmap.Clone(new Rectangle(0, 0, (int)size.Width, (int)size.Height), bitmap.PixelFormat);
+                    graph = Graphics.FromImage(bitmap);
+                    if (!_noBg)
+                    {
+                        graph.Clear(this._bgColor);
+                    }
+
 
                     Brush brush = new SolidBrush(_fontColor);
                     StringFormat strFormat = new StringFormat();
@@ -257,13 +289,24 @@ namespace WordToPDF.Models
                     {
                         bitmap = KiRotate(bitmap);
                     }
+                    if (_tiling)
+                    {
+                        // 创建水印笔刷
+                        TextureBrush wtbrush = new TextureBrush(bitmap);
+                        // 按照原画布大小,创建新的画布
+                        Bitmap newBitmap = new Bitmap(this._width, this._height, PixelFormat.Format32bppArgb);
+                        Graphics newGraph = Graphics.FromImage(newBitmap);
+                        // 平铺水印笔刷
+                        newGraph.FillRectangle(wtbrush, new System.Drawing.Rectangle(0, 0, _width, _height));
+                        bitmap = (Bitmap)newBitmap.Clone();
+                    }
+
                     _resultImage = (Image)bitmap.Clone();
                     bitmap.Dispose();
                     graph.Dispose();
                 }
                 catch (Exception)
                 {
-
                     throw;
                 }
             }
