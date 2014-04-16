@@ -42,6 +42,11 @@ namespace WordToPDF.Controllers
                 int imgWith = (int)docPageInfo.WidthInPoints / 72 * 300;
                 int imgHeight = (int)docPageInfo.HeightInPoints / 72 * 300;
 
+                WordToPDF.Models.Watermark.WaterImage wt = new WordToPDF.Models.Watermark.WaterImage(imgWith, imgHeight);
+                wt.FontSize = 200;
+                wt.Create();
+                var imgAttr = wt.SetTransparency(wt.Transparency);
+
                 for (int pageCount = 1; pageCount <= pdfDoc.Pages.Count; pageCount++)
                 {
                     Resolution resolution = new Resolution(300);
@@ -52,7 +57,7 @@ namespace WordToPDF.Controllers
                         jpgBuilder.Process(pdfDoc.Pages[pageCount], jpgMs);
 
                         System.Drawing.Image img = System.Drawing.Image.FromStream(jpgMs);
-                        ImgAddWaterMark(ref img);
+                        ImgAddWaterMark(wt.ResultImage, imgAttr, ref img);
 
                         Aspose.Pdf.Generator.Image pdfImg = Aspose.Pdf.Generator.Image.FromSystemImage(img);
 
@@ -99,7 +104,7 @@ namespace WordToPDF.Controllers
             return View();
         }
 
-        public void ImgAddWaterMark(ref System.Drawing.Image image)
+        public void ImgAddWaterMark(System.Drawing.Image waterImg, ImageAttributes imgAttr, ref System.Drawing.Image image)
         {
             System.Drawing.Graphics graph = System.Drawing.Graphics.FromImage(image);
             graph.DrawImage(image, 0, 0, image.Width, image.Height);
@@ -110,11 +115,11 @@ namespace WordToPDF.Controllers
 
             using (MemoryStream ms = new MemoryStream())
             {
-                WordToPDF.Models.Watermark.WaterImage wt = new WordToPDF.Models.Watermark.WaterImage(image.Width, image.Height);
-                wt.FontSize = 200;
-                wt.Create();
-                graph.DrawImage(wt.ResultImage, new System.Drawing.Rectangle(0, 0, wt.ResultImage.Width, wt.ResultImage.Height)
-                    , 0, 0, wt.ResultImage.Width, wt.ResultImage.Height, GraphicsUnit.Pixel, wt.SetTransparency(wt.Transparency));
+                //WordToPDF.Models.Watermark.WaterImage wt = new WordToPDF.Models.Watermark.WaterImage(image.Width, image.Height);
+                //wt.FontSize = 200;
+                //wt.Create();
+                graph.DrawImage(waterImg, new System.Drawing.Rectangle(0, 0, waterImg.Width, waterImg.Height)
+                    , 0, 0, waterImg.Width, waterImg.Height, GraphicsUnit.Pixel, imgAttr);
             }
 
             graph.Dispose();
