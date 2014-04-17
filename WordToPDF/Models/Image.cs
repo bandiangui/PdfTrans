@@ -247,26 +247,26 @@ namespace WordToPDF.Models
                     bitmap = new Bitmap(this._width, this._height, PixelFormat.Format32bppArgb);
                     graph = Graphics.FromImage(bitmap);
 
-                    graph.SmoothingMode = SmoothingMode.AntiAlias;
-                    graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    graph.CompositingQuality = CompositingQuality.HighQuality;
-
                     Font font = _bold ? new Font(_fontFamily, _fontSize, FontStyle.Bold) : new Font(_fontFamily, _fontSize, FontStyle.Regular);
                     SizeF size = graph.MeasureString(_text, font);
 
-                    if (_adaptable)
+                    while (size.Width > _width || size.Height > _height)
                     {
-                        while (size.Width > _width || size.Height > _height)
-                        {
-                            _fontSize--;
-                            font = _bold ? new Font(_fontFamily, _fontSize, FontStyle.Bold) : new Font(_fontFamily, _fontSize, FontStyle.Regular);
-                            size = graph.MeasureString(_text, font);
-                        }
+                        _fontSize--;
+                        font = _bold ? new Font(_fontFamily, _fontSize, FontStyle.Bold) : new Font(_fontFamily, _fontSize, FontStyle.Regular);
+                        size = graph.MeasureString(_text, font);
                     }
 
                     // 根据字体大小裁剪画布
                     bitmap = bitmap.Clone(new Rectangle(0, 0, (int)size.Width, (int)size.Height), bitmap.PixelFormat);
                     graph = Graphics.FromImage(bitmap);
+
+                    //消除锯齿化 
+                    graph.SmoothingMode = SmoothingMode.AntiAlias;
+                    graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    graph.CompositingQuality = CompositingQuality.HighQuality;
+                    graph.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
                     if (!_noBg)
                     {
                         graph.Clear(this._bgColor);
@@ -329,12 +329,7 @@ namespace WordToPDF.Models
                     graph.Clear(_bgColor);
                 }
 
-                graph.SmoothingMode = SmoothingMode.HighQuality;
-                graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graph.CompositingQuality = CompositingQuality.HighQuality;
-
                 graph.DrawImageUnscaled(bmp, 1, 1);
-
                 graph.Dispose();
 
                 GraphicsPath path = new GraphicsPath();
@@ -349,10 +344,6 @@ namespace WordToPDF.Models
                 {
                     graph.Clear(_bgColor);
                 }
-
-                graph.SmoothingMode = SmoothingMode.HighQuality;
-                graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graph.CompositingQuality = CompositingQuality.HighQuality;
 
                 graph.TranslateTransform(-rct.X, -rct.Y);
                 graph.RotateTransform(_rotation);

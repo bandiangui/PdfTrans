@@ -256,7 +256,7 @@ namespace WordToPDF.Models
         public class PDFWatermark : DocumentHelper.Watermark
         {
             #region 属性 及 变量
-            private float _fontSize = 50.0f;
+            private float _fontSize = 90.0f;
             public float FontSize
             {
                 get { return _fontSize; }
@@ -282,8 +282,14 @@ namespace WordToPDF.Models
             }
             #endregion
 
-            public PDFWatermark() : base() { }
-            public PDFWatermark(string text) : base(text) { }
+            public PDFWatermark() : base() {
+                Width = 700;
+                Height = 300;
+            }
+            public PDFWatermark(string text) : base(text) {
+                Width = 700;
+                Height = 300;
+            }
             public BoxVerticalAlignmentType GetBoxVerticalAlignment()
             {
                 return (BoxVerticalAlignmentType)Enum.Parse(typeof(BoxVerticalAlignmentType), VerticalAlign.ToString());
@@ -306,6 +312,7 @@ namespace WordToPDF.Models
             Image.ImageBuilderFromText imageBuilder = new Image.ImageBuilderFromText((int)pwm.Width, (int)pwm.Height);
             imageBuilder.Text = pwm.Text;
             imageBuilder.FontSize = pwm.FontSize;
+
             imageBuilder.FontColor = pwm.FillColor;
             //imageBuilder.Transparency = pwm.FillOpacity;
             imageBuilder.Rotation = pwm.Rotation;
@@ -313,10 +320,14 @@ namespace WordToPDF.Models
             imageBuilder.Tiling = false;
 
             imageBuilder.Create();
-            imageBuilder.ResultImage.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".png", System.Drawing.Imaging.ImageFormat.Png);
-            Aspose.Pdf.Generator.Image image = Aspose.Pdf.Generator.Image.FromSystemImage(imageBuilder.ResultImage);
-            //image.Opacity = pwm.FillOpacity;
+            imageBuilder.ResultImage.Save(@"E:\2\123a897a-441a-4463-b881-35fdaab83341.png", System.Drawing.Imaging.ImageFormat.Png);
+
+            Aspose.Pdf.Generator.Image image = new Aspose.Pdf.Generator.Image();
+            image.ImageInfo.File = @"E:\2\123a897a-441a-4463-b881-35fdaab83341.png";
+            image.Opacity = pwm.FillOpacity;
             image.ImageInfo.ImageFileType = ImageFileType.Png;
+            image.ImageInfo.Alignment = pwm.FontAlign;
+            
 
             // 创建水印盒子
             FloatingBox watermark = new FloatingBox(pwm.Width, pwm.Height);
@@ -324,7 +335,7 @@ namespace WordToPDF.Models
             watermark.BoxVerticalAlignment = pwm.GetBoxVerticalAlignment();         //垂直对齐
             watermark.BoxHorizontalPositioning = BoxHorizontalPositioningType.Margin;
             watermark.BoxHorizontalAlignment = pwm.GetBoxHorizontalAlignment();     //水平对齐
-            watermark.ZIndex = -1;
+            //watermark.ZIndex = -1;
 
             watermark.Paragraphs.Add(image);
             pdf.Watermarks.Add(watermark);

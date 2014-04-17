@@ -107,11 +107,11 @@ namespace WordToPDF.Controllers
                 PDF pdf = new PDF();
                 pdf.InsertWatermark(ref pdf1, pwm);
 
-                //var img = new Aspose.Pdf.Generator.Image();
-                //img.ImageInfo.File = @"C:\Users\芸芸\Desktop\cb71b07fc15cbcc3e587e1e83bc751c7.jpg";
-                //pdf1.Sections[0].Paragraphs.Add(img);
-                pdf1.Sections[0].Paragraphs.Add(new Text("111"));
-                pdf1.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".pdf");
+                var img = new Aspose.Pdf.Generator.Image();
+                img.ImageInfo.File = @"C:\Users\芸芸\Desktop\cb71b07fc15cbcc3e587e1e83bc751c7.jpg";
+                pdf1.Sections[0].Paragraphs.Add(img);
+                //pdf1.Sections[0].Paragraphs.Add(new Text("111"));
+                pdf1.Save(@"E:\2\" + Guid.NewGuid().ToString() + ".pdf");
             }
             catch (Exception e)
             {
