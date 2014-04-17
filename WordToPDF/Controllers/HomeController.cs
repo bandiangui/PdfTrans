@@ -11,7 +11,6 @@ using System.IO;
 //using Aspose.Pdf.Generator;
 using Aspose.Words;
 using Aspose.Pdf;
-using Aspose.Pdf.Devices;
 using Aspose.Pdf.Generator;
 
 namespace WordToPDF.Controllers
@@ -23,52 +22,11 @@ namespace WordToPDF.Controllers
             ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
 
 
-            Aspose.Words.Document doc = new Aspose.Words.Document(@"C:\Users\芸芸\Desktop\菠萝咕咾肉的做法.docx");
-            Word word = new Word();
-            word.WordInsertWatermark(ref doc, new Word.WordWatermark("内部资料"));
-            doc.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".pdf", Aspose.Words.SaveFormat.Pdf);
-            //Pdf pdf = new Pdf();
-            //Aspose.Pdf.Generator.Section section = pdf.Sections.Add();
+            //Aspose.Words.Document doc = new Aspose.Words.Document(@"C:\Users\芸芸\Desktop\菠萝咕咾肉的做法.docx");
+            //Word word = new Word();
+            //word.WordInsertWatermark(ref doc, new Word.WordWatermark("内部资料"));
+            //doc.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".pdf", Aspose.Words.SaveFormat.Pdf);
 
-            //using (FileStream fs = new FileStream(@"E:\2\" + Guid.NewGuid().ToString() + "___1.pdf", FileMode.Create))
-            //{
-            //    doc.Save(fs, Aspose.Words.SaveFormat.Pdf);
-
-            //    // 把pdf转换为图片,并加水印
-            //    Aspose.Pdf.Document pdfDoc = new Aspose.Pdf.Document(fs);
-            //    var docPageInfo = doc.GetPageInfo(1);
-            //    section.PageInfo.PageWidth = docPageInfo.WidthInPoints;
-            //    section.PageInfo.PageHeight = docPageInfo.HeightInPoints;
-            //    section.PageInfo.Margin = new Aspose.Pdf.Generator.MarginInfo();
-
-            //    int imgWith = (int)docPageInfo.WidthInPoints / 72 * 300;
-            //    int imgHeight = (int)docPageInfo.HeightInPoints / 72 * 300;
-
-            //    WordToPDF.Models.Watermark.WaterImage wt = new WordToPDF.Models.Watermark.WaterImage(imgWith, imgHeight);
-            //    wt.FontSize = 200;
-            //    wt.Create();
-            //    var imgAttr = wt.SetTransparency(wt.Transparency);
-
-            //    for (int pageCount = 1; pageCount <= pdfDoc.Pages.Count; pageCount++)
-            //    {
-            //        Resolution resolution = new Resolution(300);
-
-            //        JpegDevice jpgBuilder = new JpegDevice(imgWith, imgHeight, resolution, 100);
-            //        using (MemoryStream jpgMs = new MemoryStream())
-            //        {
-            //            jpgBuilder.Process(pdfDoc.Pages[pageCount], jpgMs);
-
-            //            System.Drawing.Image img = System.Drawing.Image.FromStream(jpgMs);
-            //            ImgAddWaterMark(wt.ResultImage, imgAttr, ref img);
-
-            //            Aspose.Pdf.Generator.Image pdfImg = Aspose.Pdf.Generator.Image.FromSystemImage(img);
-
-            //            section.Paragraphs.Add(pdfImg);
-            //        }
-
-            //    }
-            //}
-            //pdf.Save(@"E:\2\" + Guid.NewGuid().ToString() + ".pdf");
             return View();
         }
 
@@ -102,7 +60,63 @@ namespace WordToPDF.Controllers
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
+            try
+            {
+                //Pdf pdf1 = new Pdf();
+                //Aspose.Pdf.Generator.Section sec1 = pdf1.Sections.Add();
 
+                //Aspose.Pdf.Generator.FloatingBox wk = new Aspose.Pdf.Generator.FloatingBox(500, 500);
+                //wk.BoxHorizontalAlignment = BoxHorizontalAlignmentType.Center;
+                //wk.BoxVerticalAlignment = BoxVerticalAlignmentType.Center;
+                //wk.BoxHorizontalPositioning = BoxHorizontalPositioningType.Page;
+                //wk.BoxVerticalPositioning = BoxVerticalPositioningType.Page;
+
+                //Aspose.Pdf.Generator.Text tt = new Aspose.Pdf.Generator.Text("这里是水印");
+                //tt.TextInfo.Color = new Aspose.Pdf.Generator.Color("gray");
+                //tt.TextInfo.Alignment = AlignmentType.Center;
+                //tt.TextInfo.FontSize = 40.0f;
+                //tt.Opacity = 0.5f;
+                //wk.Paragraphs.Add(tt);
+
+                //pdf1.Watermarks.Add(wk);
+                //pdf1.IsWatermarkOnTop = true;
+                //pdf1.Sections[0].Paragraphs.Add(new Text(" Aspose.Pdf is a .NET Component built to ease the job of developers to create PDF documents ranging from simple to complex on the fly programmatically. Aspose.Pdf allows developers to insert Tables, Graphs, Images, Hyperlinks and Custom Fonts etc. in the PDF documents. Moreover, it is also possible to compress PDF documents. Aspose.Pdf provides excellent security features to develop secure PDF documents. And the most distinct feature of Aspose.Pdf is that it supports the creation of PDF documents through both an API and from XML templates Aspose.Pdf is a .NET Component built to ease the job of developers to create PDF documents ranging from simple to complex on the fly programmatically. Aspose.Pdf allows developers to insert Tables, Graphs, Images, Hyperlinks and Custom Fonts etc. in the PDF documents. Moreover, it is also possible to compress PDF documents. Aspose.Pdf provides excellent security features to develop secure PDF documents. And the most distinct feature of Aspose.Pdf is that it supports the creation of PDF documents through both an API and from XML templates Aspose.Pdf is a .NET Component built to ease the job of developers to create PDF documents ranging from simple to complex on the fly programmatically. Aspose.Pdf allows developers to insert Tables, Graphs, Images, Hyperlinks and Custom Fonts etc. in the PDF documents. Moreover, it is also possible to compress PDF documents. Aspose.Pdf provides excellent security features to develop secure PDF documents. And the most distinct feature of Aspose.Pdf is that it supports the creation of PDF documents through both an API and from XML templates "));
+                //pdf1.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".pdf");
+
+                Pdf pdf1 = new Pdf();
+                Aspose.Pdf.Generator.Section sec1 = pdf1.Sections.Add();
+
+                //Text text = new Text("这里是水印");
+                //text.TextInfo.Alignment = AlignmentType.Center;
+                //text.TextInfo.FontSize = 40.0f;
+                //text.Opacity = 0.3f;
+                //text.RotatingAngle = 45.0f;
+                //text.TextInfo.Color = new Aspose.Pdf.Generator.Color("gray");
+
+                //Aspose.Pdf.Generator.FloatingBox watermark = new Aspose.Pdf.Generator.FloatingBox(500, 200);
+                //watermark.BoxVerticalPositioning = BoxVerticalPositioningType.Margin;
+                //watermark.BoxVerticalAlignment = BoxVerticalAlignmentType.Top;
+                //watermark.ZIndex = -1;
+                //watermark.BoxHorizontalPositioning = BoxHorizontalPositioningType.Margin;
+                //watermark.Paragraphs.Add(text);
+                //pdf1.Watermarks.Add(watermark);
+
+                //pdf1.IsWatermarkOnTop = true;
+
+                PDF.PDFWatermark pwm = new PDF.PDFWatermark("这里是水印");
+                PDF pdf = new PDF();
+                pdf.InsertWatermark(ref pdf1, pwm);
+
+                //var img = new Aspose.Pdf.Generator.Image();
+                //img.ImageInfo.File = @"C:\Users\芸芸\Desktop\cb71b07fc15cbcc3e587e1e83bc751c7.jpg";
+                //pdf1.Sections[0].Paragraphs.Add(img);
+                pdf1.Sections[0].Paragraphs.Add(new Text("111"));
+                pdf1.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".pdf");
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
             return View();
         }
 

@@ -1,4 +1,5 @@
-﻿using Aspose.Words;
+﻿using Aspose.Pdf.Generator;
+using Aspose.Words;
 using Aspose.Words.Drawing;
 using System;
 using System.Collections.Generic;
@@ -10,31 +11,9 @@ using System.Web;
 
 namespace WordToPDF.Models
 {
-    public class Word
+    public class DocumentHelper
     {
-        /// <summary>
-        /// Word转PDF
-        /// </summary>
-        /// <param name="st">word数据流</param>
-        /// <param name="pdfPath">pdf数据流</param>
-        public void WordToPDF(Stream st, ref FileStream pdfSt)
-        {
-            Aspose.Words.Document doc = new Aspose.Words.Document(st);
-            doc.Save(pdfSt, Aspose.Words.SaveFormat.Pdf);
-        }
-
-        /// <summary>
-        /// Word中添加水印
-        /// </summary>
-        /// <param name="doc"></param>
-        /// <param name="watermark"></param>
-        public void WordInsertWatermark(ref Aspose.Words.Document doc, WordWatermark wwm)
-        {
-            var a = wwm.GetVerticalAlignment();
-            InsertWatermarkText(doc, wwm);
-        }
-
-        public class WordWatermark
+        public class Watermark
         {
             #region 属性 及 变量
             public string Text { get; set; }
@@ -48,6 +27,24 @@ namespace WordToPDF.Models
                 set { _fontFamily = value; }
             }
             /// <summary>
+            /// 填充颜色
+            /// </summary>
+            private System.Drawing.Color _fillColor = System.Drawing.Color.LightGray;
+            public System.Drawing.Color FillColor
+            {
+                get { return _fillColor; }
+                set { _fillColor = value; }
+            }
+            /// <summary>
+            /// 线条颜色
+            /// </summary>
+            private System.Drawing.Color _lineColor = System.Drawing.Color.Empty;
+            public System.Drawing.Color LineColor
+            {
+                get { return _lineColor; }
+                set { _lineColor = value; }
+            }
+            /// <summary>
             /// 加粗
             /// </summary>
             public bool FontBold { get; set; }
@@ -55,46 +52,43 @@ namespace WordToPDF.Models
             /// 倾斜
             /// </summary>
             public bool FontItalic { get; set; }
+
+            private float _width = 500;
+            public float Width
+            {
+                get { return _width; }
+                set { _width = value; }
+            }
+
+            private float _height = 100;
+            public float Height
+            {
+                get { return _height; }
+                set { _height = value; }
+            }
+
             /// <summary>
             /// 旋转角度
             /// </summary>
-            private double _rotation = 315;
-            public double Rotation
+            private float _rotation = 315;
+            public float Rotation
             {
                 get { return _rotation; }
                 set { _rotation = value; }
             }
             /// <summary>
-            /// 填充颜色
-            /// </summary>
-            private Color _fillColor = Color.LightGray;
-            public Color FillColor
-            {
-                get { return _fillColor; }
-                set { _fillColor = value; }
-            }
-            /// <summary>
             /// 填充透明度
             /// </summary>
-            private double _fillOpacity = 0.5f;
-            public double FillOpacity
+            private float _fillOpacity = 0.5f;
+            public float FillOpacity
             {
                 get { return _fillOpacity; }
                 set { _fillOpacity = value; }
             }
             /// <summary>
-            /// 线条颜色
-            /// </summary>
-            public Color _lineColor = Color.Empty;
-            public Color LineColor
-            {
-                get { return _lineColor; }
-                set { _lineColor = value; }
-            }
-            /// <summary>
             /// 线条透明度
             /// </summary>
-            public double LineOpacity { get; set; }
+            public float LineOpacity { get; set; }
             /// <summary>
             /// 垂直对齐
             /// </summary>
@@ -115,21 +109,12 @@ namespace WordToPDF.Models
             }
             #endregion
 
-            public WordWatermark()
+            public Watermark()
             {
             }
-            public WordWatermark(string text)
+            public Watermark(string text)
             {
                 this.Text = text;
-            }
-
-            public VerticalAlignment GetVerticalAlignment()
-            {
-                return (VerticalAlignment)Enum.Parse(typeof(VerticalAlignment), this._verticalAlign.ToString());
-            }
-            public HorizontalAlignment GetHorizontalAlignment()
-            {
-                return (HorizontalAlignment)Enum.Parse(typeof(AlignEnum), this._align.ToString());
             }
 
             /// <summary>
@@ -137,7 +122,7 @@ namespace WordToPDF.Models
             /// </summary>
             public enum VerticalAlignEnum
             {
-                Default = 0,
+                None = 0,
                 Top = 1,
                 Center = 2,
                 Bottom = 3
@@ -148,28 +133,71 @@ namespace WordToPDF.Models
             /// </summary>
             public enum AlignEnum
             {
-                Default = 0,
+                None = 0,
                 Left = 1,
                 Center = 2,
                 Right = 3
             }
         }
+    }
+    public class Word
+    {
+        public class WordWatermark : DocumentHelper.Watermark
+        {
+            #region 属性 及 变量
+            #           endregion
 
+            public WordWatermark() : base() { }
+            public WordWatermark(string text) : base(text) { }
+
+            public VerticalAlignment GetVerticalAlignment()
+            {
+                return (VerticalAlignment)Enum.Parse(typeof(VerticalAlignment), VerticalAlign.ToString());
+            }
+            public HorizontalAlignment GetHorizontalAlignment()
+            {
+                return (HorizontalAlignment)Enum.Parse(typeof(AlignEnum), Align.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Word转PDF
+        /// </summary>
+        /// <param name="st">word数据流</param>
+        /// <param name="pdfPath">pdf数据流</param>
+        public void WordToPDF(Stream st, ref FileStream pdfSt)
+        {
+            Aspose.Words.Document doc = new Aspose.Words.Document(st);
+            doc.Save(pdfSt, Aspose.Words.SaveFormat.Pdf);
+        }
+
+        /// <summary>
+        /// Word中添加水印
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <param name="watermark"></param>
+        public void InsertWatermark(ref Aspose.Words.Document doc, WordWatermark wwm)
+        {
+            var a = wwm.GetVerticalAlignment();
+            InsertTextWatermark(doc, wwm);
+        }
+
+        #region 水印操作
 
         /// <summary>
         /// 插入水印
         /// </summary>
         /// <param name="doc">Word Document</param>
         /// <param name="watermarkText">水印文字</param>
-        private void InsertWatermarkText(Aspose.Words.Document doc, WordWatermark wwm)
+        private void InsertTextWatermark(Aspose.Words.Document doc, WordWatermark wwm)
         {
             // 创建word艺术字
-            Shape watermark = new Shape(doc, ShapeType.TextPlainText);
+            Aspose.Words.Drawing.Shape watermark = new Aspose.Words.Drawing.Shape(doc, ShapeType.TextPlainText);
 
             watermark.TextPath.Text = wwm.Text;
             watermark.TextPath.FontFamily = wwm.FontFamily;
-            watermark.Width = 500;
-            watermark.Height = 100;
+            watermark.Width = wwm.Width;
+            watermark.Height = wwm.Height;
 
             //旋转角度
             watermark.Rotation = wwm.Rotation;
@@ -192,32 +220,114 @@ namespace WordToPDF.Models
             watermark.HorizontalAlignment = HorizontalAlignment.Center;     //水平对齐方式
 
             // 把水印图片插入到一个新段落中(word中任何东西都是以段落方式存在的)
-            Paragraph watermarkPara = new Paragraph(doc);
+            Aspose.Words.Paragraph watermarkPara = new Aspose.Words.Paragraph(doc);
             watermarkPara.AppendChild(watermark);
 
             // 在页眉中插入水印(word中的水印是在页眉中的)
-            foreach (Section sect in doc.Sections)
+            foreach (Aspose.Words.Section sect in doc.Sections)
             {
                 //在各种页眉中插入水印
-                InsertWatermarkIntoHeader(watermarkPara, sect, HeaderFooterType.HeaderPrimary);
-                InsertWatermarkIntoHeader(watermarkPara, sect, HeaderFooterType.HeaderFirst);
-                InsertWatermarkIntoHeader(watermarkPara, sect, HeaderFooterType.HeaderEven);
+                InsertWatermarkIntoHeader(watermarkPara, sect, Aspose.Words.HeaderFooterType.HeaderPrimary);
+                InsertWatermarkIntoHeader(watermarkPara, sect, Aspose.Words.HeaderFooterType.HeaderFirst);
+                InsertWatermarkIntoHeader(watermarkPara, sect, Aspose.Words.HeaderFooterType.HeaderEven);
             }
         }
 
-        private void InsertWatermarkIntoHeader(Paragraph watermarkPara, Section sect, HeaderFooterType headerType)
+        private void InsertWatermarkIntoHeader(Aspose.Words.Paragraph watermarkPara, Aspose.Words.Section sect, Aspose.Words.HeaderFooterType headerType)
         {
-            HeaderFooter header = sect.HeadersFooters[headerType];
+            Aspose.Words.HeaderFooter header = sect.HeadersFooters[headerType];
 
             if (header == null)
             {
                 // 如果word文档没有页眉,创建一个
-                header = new HeaderFooter(sect.Document, headerType);
+                header = new Aspose.Words.HeaderFooter(sect.Document, headerType);
                 sect.HeadersFooters.Add(header);
             }
 
             // 插入水印
             header.AppendChild(watermarkPara.Clone(true));
+        }
+        #endregion
+
+    }
+
+    public class PDF
+    {
+        public class PDFWatermark : DocumentHelper.Watermark
+        {
+            #region 属性 及 变量
+            private float _fontSize = 50.0f;
+            public float FontSize
+            {
+                get { return _fontSize; }
+                set { _fontSize = value; }
+            }
+            /// <summary>
+            /// 文本对齐方式
+            /// </summary>
+            private AlignmentType _fontAlign = AlignmentType.Center;
+            public AlignmentType FontAlign
+            {
+                get { return _fontAlign; }
+                set { _fontAlign = value; }
+            }
+            /// <summary>
+            /// 水印是在最顶层
+            /// </summary>
+            public bool _watermarkOnTop = true;
+            public bool WatermarkOnTop
+            {
+                get { return _watermarkOnTop; }
+                set { _watermarkOnTop = value; }
+            }
+            #endregion
+
+            public PDFWatermark() : base() { }
+            public PDFWatermark(string text) : base(text) { }
+            public BoxVerticalAlignmentType GetBoxVerticalAlignment()
+            {
+                return (BoxVerticalAlignmentType)Enum.Parse(typeof(BoxVerticalAlignmentType), VerticalAlign.ToString());
+            }
+            public BoxHorizontalAlignmentType GetBoxHorizontalAlignment()
+            {
+                return (BoxHorizontalAlignmentType)Enum.Parse(typeof(BoxHorizontalAlignmentType), Align.ToString());
+            }
+        }
+        public void InsertWatermark(ref Aspose.Pdf.Generator.Pdf pdf, PDFWatermark pwm)
+        {
+            InsertTextWatermark(pdf, pwm);
+        }
+
+        private void InsertTextWatermark(Aspose.Pdf.Generator.Pdf pdf, PDFWatermark pwm)
+        {
+
+            pdf.IsWatermarkOnTop = pwm.WatermarkOnTop;
+
+            Image.ImageBuilderFromText imageBuilder = new Image.ImageBuilderFromText((int)pwm.Width, (int)pwm.Height);
+            imageBuilder.Text = pwm.Text;
+            imageBuilder.FontSize = pwm.FontSize;
+            imageBuilder.FontColor = pwm.FillColor;
+            //imageBuilder.Transparency = pwm.FillOpacity;
+            imageBuilder.Rotation = pwm.Rotation;
+            imageBuilder.Adaptable = false;
+            imageBuilder.Tiling = false;
+
+            imageBuilder.Create();
+            imageBuilder.ResultImage.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".png", System.Drawing.Imaging.ImageFormat.Png);
+            Aspose.Pdf.Generator.Image image = Aspose.Pdf.Generator.Image.FromSystemImage(imageBuilder.ResultImage);
+            //image.Opacity = pwm.FillOpacity;
+            image.ImageInfo.ImageFileType = ImageFileType.Png;
+
+            // 创建水印盒子
+            FloatingBox watermark = new FloatingBox(pwm.Width, pwm.Height);
+            watermark.BoxVerticalPositioning = BoxVerticalPositioningType.Margin;
+            watermark.BoxVerticalAlignment = pwm.GetBoxVerticalAlignment();         //垂直对齐
+            watermark.BoxHorizontalPositioning = BoxHorizontalPositioningType.Margin;
+            watermark.BoxHorizontalAlignment = pwm.GetBoxHorizontalAlignment();     //水平对齐
+            watermark.ZIndex = -1;
+
+            watermark.Paragraphs.Add(image);
+            pdf.Watermarks.Add(watermark);
         }
     }
 }

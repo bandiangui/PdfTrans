@@ -9,22 +9,22 @@ using System.Web;
 
 namespace WordToPDF.Models
 {
-    public class Watermark
+    public class Image
     {
         /**/
         /// <summary>
         /// WaterMark
         /// </summary>
-        public class WaterImage
+        public class ImageBuilderFromText
         {
             private int _width = 460;
             private int _height = 30;
             private int _left = 0;
             private int _top = 0;
 
-            private string _text = "内部资料";
-            private string _fontFamily = "华文行楷";
-            private int _fontSize = 140;
+            private string _text = "";
+            private string _fontFamily = "宋体";
+            private float _fontSize = 140;
             private Color _fontColor = Color.Black;
             private bool _bold = true;
 
@@ -55,7 +55,7 @@ namespace WordToPDF.Models
             /// <summary>
             /// 倾斜角度
             /// </summary>
-            private int _rotation = 45;
+            private float _rotation = 45;
 
             /// <summary>
             /// 底图
@@ -64,11 +64,11 @@ namespace WordToPDF.Models
             /// <summary>
             /// 生成后的图片
             /// </summary>
-            private Image _resultImage;
+            private System.Drawing.Image _resultImage;
 
             #region 构造函数
-            public WaterImage() { }
-            public WaterImage(int width, int height)
+            public ImageBuilderFromText() { }
+            public ImageBuilderFromText(int width, int height)
             {
                 _width = width;
                 _height = height;
@@ -87,7 +87,7 @@ namespace WordToPDF.Models
             /// <summary>
             /// 文字大小
             /// </summary>
-            public int FontSize
+            public float FontSize
             {
                 set { this._fontSize = value; }
             }
@@ -158,7 +158,7 @@ namespace WordToPDF.Models
             /// <summary>
             /// 生成后的图片
             /// </summary>
-            public Image ResultImage
+            public System.Drawing.Image ResultImage
             {
                 set { this._resultImage = value; }
                 get { return _resultImage; }
@@ -220,7 +220,7 @@ namespace WordToPDF.Models
             /// <summary>
             /// 倾斜角度
             /// </summary>
-            public int Rotation
+            public float Rotation
             {
                 get { return _rotation; }
                 set { _rotation = value; }
@@ -301,7 +301,7 @@ namespace WordToPDF.Models
                         bitmap = (Bitmap)newBitmap.Clone();
                     }
 
-                    _resultImage = (Image)bitmap.Clone();
+                    _resultImage = (System.Drawing.Image)bitmap.Clone();
                     bitmap.Dispose();
                     graph.Dispose();
                 }
