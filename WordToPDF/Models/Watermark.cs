@@ -55,7 +55,7 @@ namespace WordToPDF.Models
             /// <summary>
             /// 倾斜角度
             /// </summary>
-            private int _incline = 45;
+            private int _rotation = 45;
 
             /// <summary>
             /// 底图
@@ -220,10 +220,10 @@ namespace WordToPDF.Models
             /// <summary>
             /// 倾斜角度
             /// </summary>
-            public int Incline
+            public int Rotation
             {
-                get { return _incline; }
-                set { _incline = value; }
+                get { return _rotation; }
+                set { _rotation = value; }
             }
 
             /// <summary>
@@ -285,7 +285,7 @@ namespace WordToPDF.Models
                     }
 
                     graph.DrawString(_text, font, brush, new PointF(_left, _top), strFormat);
-                    if (_incline != 0)
+                    if (_rotation != 0)
                     {
                         bitmap = KiRotate(bitmap);
                     }
@@ -340,7 +340,7 @@ namespace WordToPDF.Models
                 GraphicsPath path = new GraphicsPath();
                 path.AddRectangle(new RectangleF(0f, 0f, w, h));
                 Matrix mtrx = new Matrix();
-                mtrx.Rotate(_incline);
+                mtrx.Rotate(_rotation);
                 RectangleF rct = path.GetBounds(mtrx);
                 Bitmap dst = new Bitmap((int)rct.Width, (int)rct.Height, bmp.PixelFormat);
                 graph = Graphics.FromImage(dst);
@@ -355,7 +355,7 @@ namespace WordToPDF.Models
                 graph.CompositingQuality = CompositingQuality.HighQuality;
 
                 graph.TranslateTransform(-rct.X, -rct.Y);
-                graph.RotateTransform(_incline);
+                graph.RotateTransform(_rotation);
 
                 graph.DrawImageUnscaled(tmp, 0, 0);
                 graph.Dispose();

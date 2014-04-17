@@ -23,50 +23,52 @@ namespace WordToPDF.Controllers
             ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
 
 
-            Aspose.Words.Document doc = new Aspose.Words.Document(@"C:\Users\芸芸\Desktop\2013年工作总结.doc");
+            Aspose.Words.Document doc = new Aspose.Words.Document(@"C:\Users\芸芸\Desktop\菠萝咕咾肉的做法.docx");
+            Word word = new Word();
+            word.WordInsertWatermark(ref doc, new Word.WordWatermark("内部资料"));
+            doc.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".pdf", Aspose.Words.SaveFormat.Pdf);
+            //Pdf pdf = new Pdf();
+            //Aspose.Pdf.Generator.Section section = pdf.Sections.Add();
 
-            Pdf pdf = new Pdf();
-            Aspose.Pdf.Generator.Section section = pdf.Sections.Add();
+            //using (FileStream fs = new FileStream(@"E:\2\" + Guid.NewGuid().ToString() + "___1.pdf", FileMode.Create))
+            //{
+            //    doc.Save(fs, Aspose.Words.SaveFormat.Pdf);
 
-            using (FileStream fs = new FileStream(@"E:\2\" + Guid.NewGuid().ToString() + "___1.pdf", FileMode.Create))
-            {
-                doc.Save(fs, Aspose.Words.SaveFormat.Pdf);
+            //    // 把pdf转换为图片,并加水印
+            //    Aspose.Pdf.Document pdfDoc = new Aspose.Pdf.Document(fs);
+            //    var docPageInfo = doc.GetPageInfo(1);
+            //    section.PageInfo.PageWidth = docPageInfo.WidthInPoints;
+            //    section.PageInfo.PageHeight = docPageInfo.HeightInPoints;
+            //    section.PageInfo.Margin = new Aspose.Pdf.Generator.MarginInfo();
 
-                // 把pdf转换为图片,并加水印
-                Aspose.Pdf.Document pdfDoc = new Aspose.Pdf.Document(fs);
-                var docPageInfo = doc.GetPageInfo(1);
-                section.PageInfo.PageWidth = docPageInfo.WidthInPoints;
-                section.PageInfo.PageHeight = docPageInfo.HeightInPoints;
-                section.PageInfo.Margin = new Aspose.Pdf.Generator.MarginInfo();
+            //    int imgWith = (int)docPageInfo.WidthInPoints / 72 * 300;
+            //    int imgHeight = (int)docPageInfo.HeightInPoints / 72 * 300;
 
-                int imgWith = (int)docPageInfo.WidthInPoints / 72 * 300;
-                int imgHeight = (int)docPageInfo.HeightInPoints / 72 * 300;
+            //    WordToPDF.Models.Watermark.WaterImage wt = new WordToPDF.Models.Watermark.WaterImage(imgWith, imgHeight);
+            //    wt.FontSize = 200;
+            //    wt.Create();
+            //    var imgAttr = wt.SetTransparency(wt.Transparency);
 
-                WordToPDF.Models.Watermark.WaterImage wt = new WordToPDF.Models.Watermark.WaterImage(imgWith, imgHeight);
-                wt.FontSize = 200;
-                wt.Create();
-                var imgAttr = wt.SetTransparency(wt.Transparency);
+            //    for (int pageCount = 1; pageCount <= pdfDoc.Pages.Count; pageCount++)
+            //    {
+            //        Resolution resolution = new Resolution(300);
 
-                for (int pageCount = 1; pageCount <= pdfDoc.Pages.Count; pageCount++)
-                {
-                    Resolution resolution = new Resolution(300);
+            //        JpegDevice jpgBuilder = new JpegDevice(imgWith, imgHeight, resolution, 100);
+            //        using (MemoryStream jpgMs = new MemoryStream())
+            //        {
+            //            jpgBuilder.Process(pdfDoc.Pages[pageCount], jpgMs);
 
-                    JpegDevice jpgBuilder = new JpegDevice(imgWith, imgHeight, resolution, 100);
-                    using (MemoryStream jpgMs = new MemoryStream())
-                    {
-                        jpgBuilder.Process(pdfDoc.Pages[pageCount], jpgMs);
+            //            System.Drawing.Image img = System.Drawing.Image.FromStream(jpgMs);
+            //            ImgAddWaterMark(wt.ResultImage, imgAttr, ref img);
 
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(jpgMs);
-                        ImgAddWaterMark(wt.ResultImage, imgAttr, ref img);
+            //            Aspose.Pdf.Generator.Image pdfImg = Aspose.Pdf.Generator.Image.FromSystemImage(img);
 
-                        Aspose.Pdf.Generator.Image pdfImg = Aspose.Pdf.Generator.Image.FromSystemImage(img);
+            //            section.Paragraphs.Add(pdfImg);
+            //        }
 
-                        section.Paragraphs.Add(pdfImg);
-                    }
-
-                }
-            }
-            pdf.Save(@"E:\2\" + Guid.NewGuid().ToString() + ".pdf");
+            //    }
+            //}
+            //pdf.Save(@"E:\2\" + Guid.NewGuid().ToString() + ".pdf");
             return View();
         }
 

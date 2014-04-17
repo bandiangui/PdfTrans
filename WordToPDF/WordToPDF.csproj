@@ -194,6 +194,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\DocumentHelper.cs" />
     <Compile Include="Models\Watermark.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
