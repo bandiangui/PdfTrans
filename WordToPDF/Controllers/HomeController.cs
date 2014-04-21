@@ -22,10 +22,11 @@ namespace WordToPDF.Controllers
             ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
 
 
-            //Aspose.Words.Document doc = new Aspose.Words.Document(@"C:\Users\芸芸\Desktop\菠萝咕咾肉的做法.docx");
-            //Word word = new Word();
-            //word.WordInsertWatermark(ref doc, new Word.WordWatermark("内部资料"));
-            //doc.Save(@"E:\1\" + Guid.NewGuid().ToString() + ".pdf", Aspose.Words.SaveFormat.Pdf);
+            Aspose.Words.Document doc = new Aspose.Words.Document(@"C:\Users\芸芸\Desktop\2012年工作总结.doc");
+            Word word = new Word();
+            //word.InsertWatermark(ref doc, new Word.WordWatermark("内部资料"));
+            word.RemoveWarkmark(ref doc);
+            doc.Save(@"E:\2\" + Guid.NewGuid().ToString() + ".pdf", Aspose.Words.SaveFormat.Pdf);
 
             return View();
         }

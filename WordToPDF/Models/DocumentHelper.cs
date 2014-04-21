@@ -182,6 +182,19 @@ namespace WordToPDF.Models
             InsertTextWatermark(doc, wwm);
         }
 
+        public void RemoveWarkmark(ref Aspose.Words.Document doc) {
+            foreach (Aspose.Words.Section item in doc.Sections)
+            {
+                foreach (Aspose.Words.HeaderFooter hf in item.HeadersFooters)
+                {
+                    if (hf.IsHeader)
+                    {
+                        hf.Remove();
+                    }
+                }
+            }
+        }
+
         #region 水印操作
 
         /// <summary>
