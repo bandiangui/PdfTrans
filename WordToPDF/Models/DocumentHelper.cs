@@ -171,6 +171,12 @@ namespace WordToPDF.Models
             doc.Save(pdfSt, Aspose.Words.SaveFormat.Pdf);
         }
 
+        public void WordDocxToDoc(Stream st, ref FileStream docSt)
+        {
+            Aspose.Words.Document doc = new Aspose.Words.Document(st);
+            doc.Save(docSt, Aspose.Words.SaveFormat.Doc);
+        }
+
         /// <summary>
         /// Word中添加水印
         /// </summary>
